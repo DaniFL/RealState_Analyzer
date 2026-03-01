@@ -1,5 +1,6 @@
 import pandas as pd
 import sqlite3
+import matplotlib.pyplot as plt
 
 class DataExtractor:
     def __init__(self, file_path):
@@ -74,6 +75,14 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error al guardar datos en la base de datos: {e}")
 
+class DataAnalyzer:
+    def __init__(self, df):
+        self.df = df
+    
+    def analyze(self):
+        self.df.groupby("district_name")["sq_mt_price"].mean().sort_values(ascending=False).plot(kind="bar")
+        plt.show()
+
 if __name__ == "__main__":
     extractor = DataExtractor("data/RealState_Madrid.csv")
     df = extractor.extract()
@@ -82,3 +91,5 @@ if __name__ == "__main__":
     df = cleaner.clean_basic()
     db_manager = DatabaseManager("real_estate.db")
     db_manager.save_to_db(df, "real_estate")
+    analyzer = DataAnalyzer(df)
+    analyzer.analyze()
